@@ -2,6 +2,7 @@ import requests
 import configparser
 from tqdm import tqdm
 import json
+from datetime import datetime
 
 
 config = configparser.ConfigParser()
@@ -37,21 +38,25 @@ class VkAPI:
         for img in image:
             max_size_photo = max(img["sizes"], key=lambda x: x["type"] == "z")
             photo_url = max_size_photo["url"]
+
             file_name_likes = img["likes"]["count"]
+            date_time = datetime.fromtimestamp(img["date"])
+            format_date = date_time.now().strftime('%Y-%m-%d_%H-%M-%S')
+            file_name_likes = f"{file_name_likes}_{format_date}"
 
             photo_info.append({
                 "file_name": file_name_likes,
                 "size": max_size_photo["type"],
                 "url": photo_url
             })
-            
+
         return photo_info
 
 
 class JdAPI:
     def __init__(self, token):
         self.base_url = "https://cloud-api.yandex.net/v1/disk/"
-        self.headers = {"Authorization": f"OAuth {jd_token}"}
+        self.headers = {"Authorization": f"OAuth {token}"}
 
     """Создение папки на Яндекс Диске"""
     def create_folder(self):
