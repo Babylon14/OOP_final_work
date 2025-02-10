@@ -91,7 +91,7 @@ def photos_json(vk_api_photos):
 vk_api = VkAPI(vk_token)
 jd_api = JdAPI(jd_token)
 
-user_id = int(input("Введите ID пользователя: ")) # 69377195
+user_id = int(input("Введите ID пользователя: "))
 vk_api_photos = vk_api.get_photos(user_id)
 jd_api.create_folder()
 
