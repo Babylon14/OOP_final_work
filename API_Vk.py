@@ -60,8 +60,29 @@ class JdAPI:
         response = requests.put(url, params=params, headers=self.headers)
         return response.status_code
 
+    """Загрузка фото на Яндекс Диск с использованием модуля прогресс-бар"""
+    def upload_photos(self, file_name_likes):
+        url = f"{self.base_url}resources/upload"
+        file_name = f"{file_name_likes}_likes.jpg"
+        params = {"path": f"VK_photos/{file_name}"}
+
+        with tqdm(desc=f"Загрузка {file_name}", unit="B", unit_scale=True, unit_divisor=1024) as progress_bar:
+            response = requests.post(url, params=params, headers=self.headers, stream=True)
+            
+            if response.status_code == 202:
+                for resp in response.iter_content(1024):
+                    progress_bar.update(len(resp)) 
+                return f"Фото {file_name} успешно загружено"
+            else:
+                return f"Ошибка {response.status_code}: {response.text}"
+
 
 vk_api = VkAPI(vk_token)
 jd_api = JdAPI(jd_token)
 
-print(jd_api.create_folder())
+user_id = int(input("Введите ID пользователя: "))
+vk_api.get_photos(user_id)
+
+jd_api.create_folder()
+jd_api.upload_photos()
+
