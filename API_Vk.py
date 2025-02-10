@@ -2,7 +2,6 @@ import requests
 import configparser
 from tqdm import tqdm
 import json
-from pprint import pprint
 
 
 config = configparser.ConfigParser()
@@ -17,7 +16,6 @@ class VkAPI:
     def __init__(self, token, version="5.199"):
         self.base_url = "https://api.vk.com/method/"
         self.base_params = {"access_token": token, "v": version}
-
 
     def get_photos(self, user_id, count=5):
         url = f"{self.base_url}photos.get"
@@ -49,5 +47,21 @@ class VkAPI:
         return image_info
 
 
+class JdAPI:
+    def __init__(self, token):
+        self.base_url = "https://cloud-api.yandex.net/v1/disk/"
+        self.headers = {"Authorization": f"OAuth {jd_token}"}
+
+    """Создение папки на Яндекс Диске"""
+    def create_folder(self):
+        url = f"{self.base_url}resources"
+        params = {"path": "VK_photos"}
+
+        response = requests.put(url, params=params, headers=self.headers)
+        return response.status_code
+
+
 vk_api = VkAPI(vk_token)
-pprint(vk_api.get_photos(69377195))
+jd_api = JdAPI(jd_token)
+
+print(jd_api.create_folder())
