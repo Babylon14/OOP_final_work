@@ -32,9 +32,22 @@ class VkAPI:
         }
         params.update(self.base_params)
 
-        response = requests.get(url, params=params)
-        return response.json()
-    
+        response = requests.get(url, params=params).json()
+        image = response.get("response", {}).get("items", [])
+
+        image_info = []
+        for img in image:
+            max_size_photo = max(img["sizes"], key=lambda x: x["type"] == "z")
+            photo_url = max_size_photo["url"]
+            file_name_likes = img["likes"]["count"]
+
+            image_info.append({
+                "file_name": file_name_likes,
+                "size": max_size_photo["type"]
+            })
+            
+        return image_info
+
 
 vk_api = VkAPI(vk_token)
-pprint(vk_api.get_photos())
+pprint(vk_api.get_photos(69377195))
